@@ -5,6 +5,7 @@ from flask_restful import Resource, Api
 import pickle
 import datetime as dt
 import pandas as pd
+import json
 
 
 # creating the flask app
@@ -20,10 +21,14 @@ class CarModel(Resource):
     
     # Corresponds to POST request
     def post(self):
-        data = pd.DataFrame([request.get_json(force=True)])     # status code
-        print(">>",data)
-        pred=mdl.score(data)
-        return jsonify({'predictions': pred}), 201
+        data = pd.DataFrame([request.get_json(force=True)])
+        pred=mdl.predict(data)
+        out = pred.tolist()[0]
+        response = app.response_class(
+        response=json.dumps(out),
+        mimetype='application/json'
+        )
+        return response
   
 
 # adding the defined resources along with their corresponding urls
